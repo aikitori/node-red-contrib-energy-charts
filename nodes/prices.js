@@ -15,13 +15,16 @@ module.exports = function(RED) {
             end: node.end
         }
         node.on('input', function(msg) {
+            node.status({fill:"bluw",shape:"ring",text:"requesting"});
             axios.get('https://api.energy-charts.info/price',
             { params: options, headers }).then(function (response) {
+            node.status({fill:"green",shape:"ring",text: response.status});
             let prices = response.data
             msg.payload = prices
             node.send(msg)
           })
             .catch(error => {
+              node.status({fill:"red",shape:"ring",text: response.status});
               node.warn({ error: error.message,params: options })
             })
         }
