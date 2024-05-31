@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('prices',{
-        category: 'energy-chart',
-        color: '#a6bbcf',
+        category: 'energy_chart',
+        color: '#dc3545',
         defaults: {
             name: {value:""},
             bzn: {value:""},
@@ -10,7 +10,7 @@
         },
         inputs: 1,
         outputs: 1,
-        icon: "file.svg",
+        icon: "font-awesome/fa-bar-chart",
         label: function() {
             return this.name||"prices";
         }
