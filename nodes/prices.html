@@ -1,0 +1,58 @@
+<script type="text/javascript">
+    RED.nodes.registerType('prices',{
+        category: 'energy-chart',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            bzn: {value:""},
+            start: {value:"", validate:RED.validators.regex(/^$|^\d{4}-\d{2}-\d{2}$/)},
+            end: {value:"",validate:RED.validators.regex(/^$|^\d{4}-\d{2}-\d{2}$/)}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.svg",
+        label: function() {
+            return this.name||"prices";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="prices">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bzn"><i class="fa fa-globe"></i> bzn</label>
+        <select type="text" id="node-input-bzn" style="width: 70%">
+            <option value="at">Austria</option>
+            <option value="be">Belgium</option>
+            <option value="ch">Switzerland</option>
+            <option value="cz">Czech Republic</option>
+            <option value="de-lu">Germany, Luxembourg</option>
+            <option value="de-at-lu">Germany, Austria, Luxembourg</option>
+            <option value="dk1">Denmark 1</option>
+            <option value="dk2">Denmark 2</option>
+            <option value="fr">France</option>
+            <option value="hu">Hungary</option>
+            <option value="it-north">Italy North</option>
+            <option value="nl">Netherlands</option>
+            <option value="no2">Norway 2</option>
+            <option value="pl">Poland</option>
+            <option value="se4">Sweden 4</option>
+            <option value="sl">Slovenia</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-calendar"></i> start</label>
+        <input type="text" id="node-input-start" placeholder="start">
+    </div>
+    <div class="form-row">
+        <label for="node-input-end"><i class="fa fa-calendar"></i> end</label>
+        <input type="text" id="node-input-end" placeholder="end">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="prices">
+    <p>Dummy ToDO</p>
+</script>
