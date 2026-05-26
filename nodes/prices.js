@@ -24,7 +24,7 @@ module.exports = function(RED) {
             node.send(msg)
           })
             .catch(error => {
-              node.status({fill:"red",shape:"dot",text: response.status});
+              node.status({fill:"red",shape:"dot",text: error.response?.status ?? error.message});
               node.warn({ error: error.message,params: options })
             })
         }
