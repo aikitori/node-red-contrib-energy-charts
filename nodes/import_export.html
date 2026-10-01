@@ -1,0 +1,113 @@
+<script type="text/javascript">
+    RED.nodes.registerType('energy-charts-import-export', {
+        category: 'energy_chart',
+        color: '#AACCFF',
+        defaults: {
+            name: { value: "" },
+            country: { value: "de" },
+            flow: { value: "cbet" },
+            start: { value: "", validate: RED.validators.regex(/^$|^\d+$|^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/) },
+            end: { value: "", validate: RED.validators.regex(/^$|^\d+$|^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/) }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-bar-chart",
+        paletteLabel: "import/export",
+        label: function () {
+            return this.name || "import/export";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="energy-charts-import-export">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-country"><i class="fa fa-globe"></i> Country</label>
+        <select id="node-input-country" style="width: 70%">
+            <option value="de">Germany (de)</option>
+            <option value="ch">Switzerland (ch)</option>
+            <option value="eu">European Union (eu)</option>
+            <option value="all">Europe (all)</option>
+            <option value="at">Austria (at)</option>
+            <option value="ba">Bosnia-Herzegovina (ba)</option>
+            <option value="be">Belgium (be)</option>
+            <option value="bg">Bulgaria (bg)</option>
+            <option value="cy">Cyprus (cy)</option>
+            <option value="cz">Czech Republic (cz)</option>
+            <option value="dk">Denmark (dk)</option>
+            <option value="ee">Estonia (ee)</option>
+            <option value="es">Spain (es)</option>
+            <option value="fi">Finland (fi)</option>
+            <option value="fr">France (fr)</option>
+            <option value="ge">Georgia (ge)</option>
+            <option value="gr">Greece (gr)</option>
+            <option value="hr">Croatia (hr)</option>
+            <option value="hu">Hungary (hu)</option>
+            <option value="ie">Ireland (ie)</option>
+            <option value="it">Italy (it)</option>
+            <option value="lt">Lithuania (lt)</option>
+            <option value="lu">Luxembourg (lu)</option>
+            <option value="lv">Latvia (lv)</option>
+            <option value="md">Moldova (md)</option>
+            <option value="me">Montenegro (me)</option>
+            <option value="mk">North Macedonia (mk)</option>
+            <option value="nl">Netherlands (nl)</option>
+            <option value="no">Norway (no)</option>
+            <option value="pl">Poland (pl)</option>
+            <option value="pt">Portugal (pt)</option>
+            <option value="ro">Romania (ro)</option>
+            <option value="rs">Serbia (rs)</option>
+            <option value="se">Sweden (se)</option>
+            <option value="si">Slovenia (si)</option>
+            <option value="sk">Slovak Republic (sk)</option>
+            <option value="ua">Ukraine (ua)</option>
+            <option value="uk">United Kingdom (uk)</option>
+            <option value="xk">Kosovo (xk)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-flow"><i class="fa fa-exchange"></i> Data</label>
+        <select id="node-input-flow" style="width: 70%">
+            <option value="cbet">Commercial exchanges (cbet)</option>
+            <option value="cbpf">Physical flows (cbpf)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-calendar"></i> Start</label>
+        <input type="text" id="node-input-start" placeholder="today, e.g. 2026-01-01">
+    </div>
+    <div class="form-row">
+        <label for="node-input-end"><i class="fa fa-calendar"></i> End</label>
+        <input type="text" id="node-input-end" placeholder="same as start">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="energy-charts-import-export">
+    <p>Cross-border electricity trading (<code>/cbet</code>) or physical flows (<code>/cbpf</code>).</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">country <span class="property-type">string</span></dt>
+        <dd>Country code, e.g. <code>de</code>. Overrides the configured country.</dd>
+        <dt class="optional">flow <span class="property-type">string</span></dt>
+        <dd><code>cbet</code> for scheduled commercial exchanges, <code>cbpf</code> for physical flows.</dd>
+        <dt class="optional">start <span class="property-type">string | number</span></dt>
+        <dd>Start of the time range: a date (<code>2026-01-01</code>), an ISO 8601 timestamp
+            (<code>2026-01-01T17:00Z</code>) or a UNIX timestamp in seconds. Defaults to the current day.</dd>
+        <dt class="optional">end <span class="property-type">string | number</span></dt>
+        <dd>End of the time range, same formats as <code>start</code>. Defaults to <code>start</code>.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd><code>unix_seconds</code> and <code>countries</code>, an array of <code>{name, data}</code> per neighbouring country.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>The public API is rate limited (about 2 requests per minute per endpoint). On HTTP 429 the node
+        status shows the <code>Retry-After</code> time. Errors are reported to <code>catch</code> nodes;
+        <code>msg.request</code> contains the endpoint, the request parameters and the HTTP status.</p>
+    <p>Data: <a href="https://energy-charts.info" target="_blank">Energy-Charts.info</a>, licensed under
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.</p>
+</script>

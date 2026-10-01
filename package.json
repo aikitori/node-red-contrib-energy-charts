@@ -3,18 +3,28 @@
   "version": "0.0.1",
   "description": "Wrapper for the api from https://energy-charts.info",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "author": "aikitori",
   "license": "MIT",
   "node-red": {
     "version": ">=3.0.0",
     "nodes": {
-      "prices": "nodes/prices.js"
+      "prices": "nodes/prices.js",
+      "energy-charts-power": "nodes/power.js",
+      "energy-charts-import-export": "nodes/import_export.js",
+      "energy-charts-ren-share": "nodes/ren_share.js"
     }
   },
   "keywords": [
-    "node","node-red","nodered","api","energy","prices"
+    "node",
+    "node-red",
+    "nodered",
+    "api",
+    "energy",
+    "prices",
+    "energy-charts",
+    "renewables"
   ],
   "repository": {
     "type": "git",
@@ -22,5 +32,8 @@
   },
   "dependencies": {
     "axios": "^1.7.2"
-  }
+  },
+  "files": [
+    "nodes"
+  ]
 }

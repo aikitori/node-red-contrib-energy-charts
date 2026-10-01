@@ -1,18 +1,28 @@
 <script type="text/javascript">
-    RED.nodes.registerType('prices',{
+    RED.nodes.registerType('prices', {
         category: 'energy_chart',
         color: '#FFAAAA',
         defaults: {
-            name: {value:""},
-            bzn: {value:""},
-            start: {value:"", validate:RED.validators.regex(/^$|^\d{4}-\d{2}-\d{2}$/)},
-            end: {value:"",validate:RED.validators.regex(/^$|^\d{4}-\d{2}-\d{2}$/)}
+            name: { value: "" },
+            bzn: { value: "DE-LU" },
+            start: { value: "", validate: RED.validators.regex(/^$|^\d+$|^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/) },
+            end: { value: "", validate: RED.validators.regex(/^$|^\d+$|^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/) }
         },
         inputs: 1,
         outputs: 1,
         icon: "font-awesome/fa-bar-chart",
-        label: function() {
-            return this.name||"prices";
+        paletteLabel: "prices",
+        label: function () {
+            return this.name || "prices";
+        },
+        oneditprepare: function () {
+            // 0.0.1 stored lower-case zone codes ("de-lu", "it-north", "sl")
+            var stored = String(this.bzn || "DE-LU").toUpperCase();
+            if (stored === "SL") { stored = "SI"; }
+            var match = $("#node-input-bzn option").filter(function () {
+                return this.value.toUpperCase() === stored;
+            }).first();
+            $("#node-input-bzn").val(match.length ? match.val() : "DE-LU");
         }
     });
 </script>
@@ -23,36 +33,98 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-bzn"><i class="fa fa-globe"></i> bzn</label>
-        <select type="text" id="node-input-bzn" style="width: 70%">
-            <option value="at">Austria</option>
-            <option value="be">Belgium</option>
-            <option value="ch">Switzerland</option>
-            <option value="cz">Czech Republic</option>
-            <option value="de-lu">Germany, Luxembourg</option>
-            <option value="de-at-lu">Germany, Austria, Luxembourg</option>
-            <option value="dk1">Denmark 1</option>
-            <option value="dk2">Denmark 2</option>
-            <option value="fr">France</option>
-            <option value="hu">Hungary</option>
-            <option value="it-north">Italy North</option>
-            <option value="nl">Netherlands</option>
-            <option value="no2">Norway 2</option>
-            <option value="pl">Poland</option>
-            <option value="se4">Sweden 4</option>
-            <option value="sl">Slovenia</option>
+        <label for="node-input-bzn"><i class="fa fa-globe"></i> Bidding zone</label>
+        <select id="node-input-bzn" style="width: 70%">
+            <option value="AT">Austria (AT)</option>
+            <option value="BE">Belgium (BE)</option>
+            <option value="BG">Bulgaria (BG)</option>
+            <option value="CH">Switzerland (CH)</option>
+            <option value="CZ">Czech Republic (CZ)</option>
+            <option value="DE-LU">Germany, Luxembourg (DE-LU)</option>
+            <option value="DE-AT-LU">Germany, Austria, Luxembourg (DE-AT-LU)</option>
+            <option value="DK1">Denmark 1 (DK1)</option>
+            <option value="DK2">Denmark 2 (DK2)</option>
+            <option value="EE">Estonia (EE)</option>
+            <option value="ES">Spain (ES)</option>
+            <option value="FI">Finland (FI)</option>
+            <option value="FR">France (FR)</option>
+            <option value="GR">Greece (GR)</option>
+            <option value="HR">Croatia (HR)</option>
+            <option value="HU">Hungary (HU)</option>
+            <option value="IE(SEM)">Ireland (Single Electricity Market) (IE(SEM))</option>
+            <option value="IT-Brindisi">Italy Brindisi (IT-Brindisi)</option>
+            <option value="IT-Calabria">Italy Calabria (IT-Calabria)</option>
+            <option value="IT-Centre-North">Italy Centre North (IT-Centre-North)</option>
+            <option value="IT-Centre-South">Italy Centre South (IT-Centre-South)</option>
+            <option value="IT-Foggia">Italy Foggia (IT-Foggia)</option>
+            <option value="IT-GR">Italy Greece (interconnector) (IT-GR)</option>
+            <option value="IT-North">Italy North (IT-North)</option>
+            <option value="IT-North-AT">Italy North Austria (interconnector) (IT-North-AT)</option>
+            <option value="IT-North-CH">Italy North Switzerland (interconnector) (IT-North-CH)</option>
+            <option value="IT-North-FR">Italy North France (interconnector) (IT-North-FR)</option>
+            <option value="IT-North-SI">Italy North Slovenia (interconnector) (IT-North-SI)</option>
+            <option value="IT-Priolo">Italy Priolo (IT-Priolo)</option>
+            <option value="IT-Rossano">Italy Rossano (IT-Rossano)</option>
+            <option value="IT-SACOAC">Italy Sardinia Corsica AC (IT-SACOAC)</option>
+            <option value="IT-SACODC">Italy Sardinia Corsica DC (IT-SACODC)</option>
+            <option value="IT-Sardinia">Italy Sardinia (IT-Sardinia)</option>
+            <option value="IT-Sicily">Italy Sicily (IT-Sicily)</option>
+            <option value="IT-South">Italy South (IT-South)</option>
+            <option value="LT">Lithuania (LT)</option>
+            <option value="LV">Latvia (LV)</option>
+            <option value="ME">Montenegro (ME)</option>
+            <option value="NL">Netherlands (NL)</option>
+            <option value="NO1">Norway 1 (NO1)</option>
+            <option value="NO2">Norway 2 (NO2)</option>
+            <option value="NO2NSL">Norway North Sea Link (NO2NSL)</option>
+            <option value="NO3">Norway 3 (NO3)</option>
+            <option value="NO4">Norway 4 (NO4)</option>
+            <option value="NO5">Norway 5 (NO5)</option>
+            <option value="PL">Poland (PL)</option>
+            <option value="PT">Portugal (PT)</option>
+            <option value="RO">Romania (RO)</option>
+            <option value="RS">Serbia (RS)</option>
+            <option value="SE1">Sweden 1 (SE1)</option>
+            <option value="SE2">Sweden 2 (SE2)</option>
+            <option value="SE3">Sweden 3 (SE3)</option>
+            <option value="SE4">Sweden 4 (SE4)</option>
+            <option value="SI">Slovenia (SI)</option>
+            <option value="SK">Slovakia (SK)</option>
+            <option value="UA-BEI">Ukraine Burshtyn Island (UA-BEI)</option>
+            <option value="UA-IPS">Ukraine IPS (UA-IPS)</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-start"><i class="fa fa-calendar"></i> start</label>
-        <input type="text" id="node-input-start" placeholder="start">
+        <label for="node-input-start"><i class="fa fa-calendar"></i> Start</label>
+        <input type="text" id="node-input-start" placeholder="today, e.g. 2026-01-01">
     </div>
     <div class="form-row">
-        <label for="node-input-end"><i class="fa fa-calendar"></i> end</label>
-        <input type="text" id="node-input-end" placeholder="end">
+        <label for="node-input-end"><i class="fa fa-calendar"></i> End</label>
+        <input type="text" id="node-input-end" placeholder="same as start">
     </div>
 </script>
 
 <script type="text/html" data-help-name="prices">
-    <p>Dummy ToDO</p>
+    <p>Day-ahead spot market prices for a bidding zone (<code>/price</code>).</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">bzn <span class="property-type">string</span></dt>
+        <dd>Bidding zone, e.g. <code>DE-LU</code>. Overrides the configured zone.</dd>
+        <dt class="optional">start <span class="property-type">string | number</span></dt>
+        <dd>Start of the time range: a date (<code>2026-01-01</code>), an ISO 8601 timestamp
+            (<code>2026-01-01T17:00Z</code>) or a UNIX timestamp in seconds. Defaults to the current day.</dd>
+        <dt class="optional">end <span class="property-type">string | number</span></dt>
+        <dd>End of the time range, same formats as <code>start</code>. Defaults to <code>start</code>.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd><code>unix_seconds</code> and <code>price</code> arrays, plus <code>unit</code> (EUR/MWh) and <code>license_info</code>.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>The public API is rate limited (about 2 requests per minute per endpoint). On HTTP 429 the node
+        status shows the <code>Retry-After</code> time. Errors are reported to <code>catch</code> nodes;
+        <code>msg.request</code> contains the endpoint, the request parameters and the HTTP status.</p>
+    <p>Data: <a href="https://energy-charts.info" target="_blank">Energy-Charts.info</a>, licensed under
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.</p>
 </script>
